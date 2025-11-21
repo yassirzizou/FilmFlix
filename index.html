@@ -1,0 +1,3017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FilmFlix - Stream Movies & Series</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        :root {
+            --primary: #e50914;
+            --secondary: #141414;
+            --accent: #00a8ff;
+            --light: #f5f5f1;
+            --dark: #0c0c0c;
+            --card-dark: #181818;
+            --text-gray: #b3b3b3;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        header.scrolled {
+            background: var(--dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -1px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+            transition: var(--transition);
+        }
+        
+        .logo:hover i {
+            transform: rotate(180deg);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 8px 0;
+            position: relative;
+            font-size: 16px;
+        }
+        
+        nav a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+            border-radius: 3px;
+        }
+        
+        nav a:hover:after, nav a.active:after {
+            width: 100%;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            padding: 8px;
+            border-radius: 50%;
+        }
+        
+        .icon-btn:hover {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 8px 15px;
+            transition: var(--transition);
+            width: 40px;
+            overflow: hidden;
+        }
+        
+        .search-bar.active {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            width: 0;
+            transition: width 0.3s;
+            outline: none;
+            font-size: 15px;
+        }
+        
+        .search-bar.active input {
+            width: 200px;
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: var(--card-dark);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            width: 200px;
+            overflow: hidden;
+            display: none;
+            z-index: 101;
+            transform: translateY(10px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .user-dropdown.active {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .user-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: var(--light);
+            border-bottom: 1px solid #333;
+            transition: var(--transition);
+        }
+        
+        .user-dropdown a i {
+            width: 20px;
+            color: var(--text-gray);
+        }
+        
+        .user-dropdown a:hover {
+            background: rgba(229, 9, 20, 0.1);
+        }
+        
+        .user-dropdown a:last-child {
+            border-bottom: none;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 80vh;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+        
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+        
+        .hero-content {
+            position: absolute;
+            bottom: 20%;
+            left: 5%;
+            max-width: 600px;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .hero-description {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.5;
+        }
+        
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        
+        /* Content Rows - FIXED SCROLLING */
+        .content-section {
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .view-all:hover {
+            color: var(--primary);
+        }
+        
+        .content-row-container {
+            position: relative;
+            overflow: visible;
+            padding: 10px 0;
+        }
+        
+        .content-row {
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 10px 20px;
+            gap: 10px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .content-row::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+        
+        .scroll-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .scroll-button.left {
+            left: 0;
+        }
+        
+        .scroll-button.right {
+            right: 0;
+        }
+        
+        .content-row-container:hover .scroll-button {
+            opacity: 1;
+        }
+        
+        .content-card {
+            min-width: 250px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .content-card:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 15px;
+            opacity: 0;
+            transition: var(--transition);
+            transform: translateY(10px);
+        }
+        
+        .content-card:hover .card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+        
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .content-card:hover .card-actions {
+            opacity: 1;
+        }
+        
+        .card-action-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .card-action-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        .card-action-btn.active {
+            background: var(--primary);
+        }
+        
+        /* Featured Content */
+        .featured-row .content-card {
+            min-width: 300px;
+        }
+        
+        .featured-row .card-image {
+            height: 170px;
+        }
+        
+        /* Large Content Cards */
+        .large-row .content-card {
+            min-width: 400px;
+        }
+        
+        .large-row .card-image {
+            height: 225px;
+        }
+        
+        /* Auth Modals */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+        
+        .auth-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .auth-content {
+            background: var(--card-dark);
+            width: 90%;
+            max-width: 450px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+        
+        .auth-modal.active .auth-content {
+            transform: scale(1);
+        }
+        
+        .auth-header {
+            padding: 25px;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+        
+        .auth-header h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .auth-header p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #333;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #222;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .auth-tab.active {
+            background: transparent;
+            color: var(--primary);
+        }
+        
+        .auth-form {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+        }
+        
+        .auth-form .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .auth-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+        
+        .auth-footer p {
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+        
+        .social-auth {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .google-btn {
+            background: #DB4437;
+        }
+        
+        .facebook-btn {
+            background: #4267B2;
+        }
+        
+        .twitter-btn {
+            background: #1DA1F2;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            background: var(--primary);
+        }
+        
+        /* Enhanced Profile Page */
+        .profile-page {
+            padding: 100px 0 50px;
+            display: none;
+        }
+        
+        .profile-page.active {
+            display: block;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .avatar-upload-label {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--primary);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .avatar-upload-label:hover {
+            transform: scale(1.1);
+            background: var(--accent);
+        }
+        
+        .profile-info {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+        
+        .profile-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        .profile-info p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+        
+        .membership-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Profile Stats */
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--card-dark);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 30px;
+        }
+        
+        .profile-sidebar {
+            background: var(--card-dark);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-sidebar:hover {
+            transform: translateY(-5px);
+        }
+        
+        .profile-nav {
+            list-style: none;
+        }
+        
+        .profile-nav li {
+            margin-bottom: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .profile-nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            text-decoration: none;
+            color: var(--text-gray);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .profile-nav a:hover::before {
+            left: 100%;
+        }
+        
+        .profile-nav a:hover, .profile-nav a.active {
+            background: rgba(229, 9, 20, 0.1);
+            color: var(--primary);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.2);
+        }
+        
+        .profile-nav a i {
+            width: 20px;
+            font-size: 18px;
+        }
+        
+        .profile-main {
+            background: var(--card-dark);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-main:hover {
+            transform: translateY(-5px);
+        }
+        
+        .profile-section {
+            display: none;
+        }
+        
+        .profile-section.active {
+            display: block;
+        }
+        
+        .profile-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .profile-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.2);
+        }
+        
+        /* Success/Error Messages */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .message.success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            color: #2ecc71;
+        }
+        
+        .message.error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            color: #e74c3c;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Enhanced Buttons */
+        .profile-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+        
+        .profile-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(229, 9, 20, 0.4);
+        }
+        
+        .profile-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Settings Page */
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        
+        .option-info {
+            flex: 1;
+        }
+        
+        .option-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .option-info p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Enhanced Watchlist Page */
+        .watchlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+        
+        .watchlist-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--card-dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .watchlist-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .watchlist-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .watchlist-item:hover .watchlist-img {
+            transform: scale(1.1);
+        }
+        
+        .watchlist-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 20px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            transform: translateY(10px);
+        }
+        
+        .watchlist-item:hover .watchlist-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .watchlist-title {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .watchlist-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+        
+        .watchlist-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .watchlist-item:hover .watchlist-remove {
+            opacity: 1;
+        }
+        
+        .watchlist-remove:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        /* Empty State for Watchlist */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+        
+        .empty-state p {
+            max-width: 400px;
+            margin: 0 auto 25px;
+        }
+        
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* Video Player */
+        .video-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .video-player.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .video-container {
+            width: 80%;
+            max-width: 1000px;
+            position: relative;
+        }
+        
+        .video-player video {
+            width: 100%;
+            border-radius: 10px;
+        }
+        
+        .video-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Notifications Dropdown */
+        .notifications-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: var(--card-dark);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 101;
+            transform: translateY(10px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .notifications-dropdown.active {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            transition: var(--transition);
+        }
+        
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .notification-message {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        .notification-time {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .content-card {
+                min-width: 200px;
+            }
+            
+            .featured-row .content-card {
+                min-width: 250px;
+            }
+            
+            .large-row .content-card {
+                min-width: 300px;
+            }
+            
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-sidebar {
+                margin-bottom: 30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                height: 60vh;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-description {
+                font-size: 1rem;
+            }
+            
+            .content-card {
+                min-width: 150px;
+            }
+            
+            .featured-row .content-card {
+                min-width: 200px;
+            }
+            
+            .large-row .content-card {
+                min-width: 250px;
+            }
+            
+            .scroll-button {
+                display: none; /* Hide scroll buttons on mobile */
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px 20px;
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .watchlist-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                height: 50vh;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .content-card {
+                min-width: 120px;
+            }
+            
+            .featured-row .content-card {
+                min-width: 160px;
+            }
+            
+            .large-row .content-card {
+                min-width: 200px;
+            }
+            
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .watchlist-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* View Management */
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Player -->
+    <div class="video-player" id="video-player">
+        <div class="video-container">
+            <button class="video-close" id="video-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <video id="video-element" controls>
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo" data-view="home">
+                    <i class="fas fa-play-circle"></i>
+                    FilmFlix
+                </a>
+                
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active" data-view="home">Home</a></li>
+                        <li><a href="#" data-view="movies">Movies</a></li>
+                        <li><a href="#" data-view="series">Series</a></li>
+                        <li><a href="#" data-view="new">New & Popular</a></li>
+                        <li><a href="#" data-view="watchlist">My List</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="header-icons">
+                    <div class="search-container">
+                        <div class="search-bar">
+                            <i class="fas fa-search icon-btn" id="search-toggle"></i>
+                            <input type="text" placeholder="Search titles..." id="search-input">
+                        </div>
+                    </div>
+                    <div class="notifications-container">
+                        <button class="icon-btn" id="notifications-toggle">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <div class="notifications-dropdown" id="notifications-dropdown">
+                            <div class="notification-item">
+                                <div class="notification-title">New Episode Available</div>
+                                <div class="notification-message">Stranger Things S4E3 is now available</div>
+                                <div class="notification-time">2 hours ago</div>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-title">Recommended for You</div>
+                                <div class="notification-message">Based on your watch history</div>
+                                <div class="notification-time">1 day ago</div>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-title">Subscription Update</div>
+                                <div class="notification-message">Your premium plan renews in 7 days</div>
+                                <div class="notification-time">3 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu">
+                        <button class="icon-btn" id="user-menu-toggle">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <div class="user-dropdown">
+                            <a href="#" data-view="profile"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#" data-view="watchlist"><i class="fas fa-bookmark"></i> Watchlist</a>
+                            <a href="#" data-view="settings"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Auth Modals -->
+    <div class="auth-modal" id="login-modal">
+        <div class="auth-content">
+            <button class="modal-close" id="login-close"><i class="fas fa-times"></i></button>
+            <div class="auth-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to continue to FilmFlix</p>
+            </div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Sign In</div>
+                <div class="auth-tab" data-tab="register">Sign Up</div>
+            </div>
+            <div class="auth-form">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                        <button type="button" class="password-toggle" id="login-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn">Sign In</button>
+                </form>
+                
+                <form id="register-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" id="register-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" required>
+                        <button type="button" class="password-toggle" id="register-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirm Password</label>
+                        <input type="password" id="register-confirm" required>
+                    </div>
+                    <button type="submit" class="btn">Create Account</button>
+                </form>
+            </div>
+            <div class="auth-footer">
+                <p>Or continue with</p>
+                <div class="social-auth">
+                    <div class="social-btn google-btn">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div class="social-btn facebook-btn">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <div class="social-btn twitter-btn">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home View -->
+    <div class="view active" id="home-view">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-background"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Stranger Things</h1>
+                <p class="hero-description">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" id="hero-play-btn">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button class="btn" id="hero-info-btn">
+                        <i class="fas fa-info-circle"></i> More Info
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Sections -->
+        <div class="container">
+            <!-- Trending Now -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Trending Now</h2>
+                    <a href="#" class="view-all" data-category="trending">View All</a>
+                </div>
+                <div class="content-row-container">
+                    <button class="scroll-button left">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="content-row" id="trending-row">
+                        <!-- Content cards will be populated by JavaScript -->
+                    </div>
+                    <button class="scroll-button right">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Popular on FilmFlix -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Popular on FilmFlix</h2>
+                    <a href="#" class="view-all" data-category="popular">View All</a>
+                </div>
+                <div class="content-row-container">
+                    <button class="scroll-button left">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="content-row" id="popular-row">
+                        <!-- Content cards will be populated by JavaScript -->
+                    </div>
+                    <button class="scroll-button right">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Top Picks for You -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Top Picks for You</h2>
+                    <a href="#" class="view-all" data-category="topPicks">View All</a>
+                </div>
+                <div class="content-row-container">
+                    <button class="scroll-button left">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="content-row featured-row" id="top-picks-row">
+                        <!-- Content cards will be populated by JavaScript -->
+                    </div>
+                    <button class="scroll-button right">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- New Releases -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">New Releases</h2>
+                    <a href="#" class="view-all" data-category="newReleases">View All</a>
+                </div>
+                <div class="content-row-container">
+                    <button class="scroll-button left">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="content-row large-row" id="new-releases-row">
+                        <!-- Content cards will be populated by JavaScript -->
+                    </div>
+                    <button class="scroll-button right">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Watch It Again -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Watch It Again</h2>
+                    <a href="#" class="view-all" data-category="watchAgain">View All</a>
+                </div>
+                <div class="content-row-container">
+                    <button class="scroll-button left">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="content-row" id="watch-again-row">
+                        <!-- Content cards will be populated by JavaScript -->
+                    </div>
+                    <button class="scroll-button right">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div class="view" id="profile-view">
+        <div class="container">
+            <div class="profile-page">
+                <div class="profile-header">
+                    <div class="avatar-upload">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Profile Avatar" class="profile-avatar" id="profile-avatar">
+                        <label for="avatar-input" class="avatar-upload-label">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="profile-name">John Doe</h1>
+                        <p id="profile-email">john.doe@example.com</p>
+                        <p>Member since <span id="profile-join-date">Jan 2023</span></p>
+                        <span class="membership-badge">Premium Member</span>
+                    </div>
+                </div>
+                
+                <!-- Profile Stats -->
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="movies-watched">47</div>
+                        <div class="stat-label">Movies Watched</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hours-watched">128</div>
+                        <div class="stat-label">Hours Watched</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="watchlist-count">12</div>
+                        <div class="stat-label">In Watchlist</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="favorites">8</div>
+                        <div class="stat-label">Favorites</div>
+                    </div>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-sidebar">
+                        <ul class="profile-nav">
+                            <li><a href="#" class="active" data-section="profile-info"><i class="fas fa-user"></i> Profile Information</a></li>
+                            <li><a href="#" data-section="change-password"><i class="fas fa-lock"></i> Change Password</a></li>
+                            <li><a href="#" data-section="billing"><i class="fas fa-credit-card"></i> Billing Information</a></li>
+                            <li><a href="#" data-section="devices"><i class="fas fa-tv"></i> Devices</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="profile-main">
+                        <div class="message success" id="profile-success">Profile updated successfully!</div>
+                        <div class="message error" id="profile-error">Error updating profile. Please try again.</div>
+                        
+                        <div class="profile-section active" id="profile-info">
+                            <h2>Profile Information</h2>
+                            <form id="profile-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="profile-first-name">First Name</label>
+                                        <input type="text" id="profile-first-name" value="John">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profile-last-name">Last Name</label>
+                                        <input type="text" id="profile-last-name" value="Doe">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-email-input">Email Address</label>
+                                    <input type="email" id="profile-email-input" value="john.doe@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-phone">Phone Number</label>
+                                    <input type="tel" id="profile-phone" value="+1 (555) 123-4567">
+                                </div>
+                                <button type="submit" class="profile-btn">Save Changes</button>
+                            </form>
+                        </div>
+                        
+                        <div class="profile-section" id="change-password">
+                            <h2>Change Password</h2>
+                            <form id="password-form">
+                                <div class="form-group">
+                                    <label for="current-password">Current Password</label>
+                                    <input type="password" id="current-password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">New Password</label>
+                                    <input type="password" id="new-password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">Confirm New Password</label>
+                                    <input type="password" id="confirm-password" required>
+                                </div>
+                                <button type="submit" class="profile-btn">Update Password</button>
+                            </form>
+                        </div>
+                        
+                        <div class="profile-section" id="billing">
+                            <h2>Billing Information</h2>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Payment Method</h3>
+                                    <p>Visa ending in 4242</p>
+                                </div>
+                                <button class="profile-btn" id="change-payment-btn">Change</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Billing Address</h3>
+                                    <p>123 Main St, Anytown, CA 12345</p>
+                                </div>
+                                <button class="profile-btn" id="edit-address-btn">Edit</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Billing History</h3>
+                                    <p>View and download past invoices</p>
+                                </div>
+                                <button class="profile-btn" id="view-history-btn">View</button>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-section" id="devices">
+                            <h2>Devices</h2>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Chrome on Windows</h3>
+                                    <p>Last active: Today, 10:30 AM</p>
+                                </div>
+                                <button class="profile-btn" data-device="chrome">Sign Out</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Firefox on Mac</h3>
+                                    <p>Last active: Yesterday, 5:45 PM</p>
+                                </div>
+                                <button class="profile-btn" data-device="firefox">Sign Out</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Android App</h3>
+                                    <p>Last active: 2 days ago</p>
+                                </div>
+                                <button class="profile-btn" data-device="android">Sign Out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div class="view" id="settings-view">
+        <div class="container">
+            <div class="profile-page">
+                <div class="profile-header">
+                    <h1>Settings</h1>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-sidebar">
+                        <ul class="profile-nav">
+                            <li><a href="#" class="active" data-section="account"><i class="fas fa-user-cog"></i> Account</a></li>
+                            <li><a href="#" data-section="privacy"><i class="fas fa-shield-alt"></i> Privacy & Security</a></li>
+                            <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                            <li><a href="#" data-section="streaming"><i class="fas fa-tv"></i> Streaming Quality</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="profile-main">
+                        <div class="profile-section active" id="account">
+                            <h2>Account Settings</h2>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Language</h3>
+                                    <p>English (United States)</p>
+                                </div>
+                                <button class="profile-btn" id="change-language-btn">Change</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Country/Region</h3>
+                                    <p>United States</p>
+                                </div>
+                                <button class="profile-btn" id="change-country-btn">Change</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Closed Captions</h3>
+                                    <p>English</p>
+                                </div>
+                                <button class="profile-btn" id="change-captions-btn">Change</button>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-section" id="privacy">
+                            <h2>Privacy & Security</h2>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Viewing Activity</h3>
+                                    <p>Manage what you've watched</p>
+                                </div>
+                                <button class="profile-btn" id="manage-activity-btn">Manage</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Download History</h3>
+                                    <p>See what you've downloaded</p>
+                                </div>
+                                <button class="profile-btn" id="view-downloads-btn">View</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Two-Factor Authentication</h3>
+                                    <p>Add an extra layer of security</p>
+                                </div>
+                                <button class="profile-btn" id="enable-2fa-btn">Enable</button>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-section" id="notifications">
+                            <h2>Notification Settings</h2>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Email Notifications</h3>
+                                    <p>Receive emails about new releases and recommendations</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="email-notifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Push Notifications</h3>
+                                    <p>Get alerts on your devices</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="push-notifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>SMS Notifications</h3>
+                                    <p>Receive text messages about your account</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="sms-notifications">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-section" id="streaming">
+                            <h2>Streaming Quality</h2>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Data Usage Per Screen</h3>
+                                    <p>Auto (Adjusts automatically to deliver the best experience based on your connection)</p>
+                                </div>
+                                <button class="profile-btn" id="change-data-usage-btn">Change</button>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <h3>Autoplay Previews</h3>
+                                    <p>Play previews automatically when browsing</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="autoplay-previews" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Watchlist Page -->
+    <div class="view" id="watchlist-view">
+        <div class="container">
+            <div class="profile-page">
+                <div class="profile-header">
+                    <h1>My Watchlist</h1>
+                    <p>Your saved movies and series</p>
+                </div>
+                
+                <div class="watchlist-grid" id="watchlist-container">
+                    <!-- Watchlist items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete FilmFlix Implementation with Real Button Functionality
+        
+        // Sample data for content rows
+        const contentData = {
+            trending: [
+                { id: 1, title: "The Witcher", year: 2023, rating: "TV-MA", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts." },
+                { id: 2, title: "Black Mirror", year: 2023, rating: "TV-MA", image: "https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "An anthology series exploring a twisted, high-tech multiverse where humanity's greatest innovations and darkest instincts collide." },
+                { id: 3, title: "The Crown", year: 2022, rating: "TV-MA", image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Follows the political rivalries and romance of Queen Elizabeth II's reign and the events that shaped the second half of the 20th century." },
+                { id: 4, title: "Stranger Things", year: 2022, rating: "TV-14", image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl." },
+                { id: 5, title: "Money Heist", year: 2021, rating: "TV-MA", image: "https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "An unusual group of robbers attempt to carry out the most perfect robbery in Spanish history - stealing 2.4 billion euros from the Royal Mint of Spain." },
+                { id: 6, title: "Breaking Bad", year: 2013, rating: "TV-MA", image: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future." },
+                { id: 7, title: "The Queen's Gambit", year: 2020, rating: "TV-MA", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Orphaned at the tender age of nine, prodigious introvert Beth Harmon discovers and masters the game of chess in 1960s USA." }
+            ],
+            popular: [
+                { id: 8, title: "The Mandalorian", year: 2023, rating: "TV-PG", image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "The travels of a lone bounty hunter in the outer reaches of the galaxy, far from the authority of the New Republic." },
+                { id: 9, title: "Bridgerton", year: 2022, rating: "TV-MA", image: "https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "The eight close-knit siblings of the Bridgerton family look for love and happiness in London high society." },
+                { id: 10, title: "Lupin", year: 2021, rating: "TV-MA", image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Inspired by the adventures of Arsène Lupin, gentleman thief Assane Diop sets out to avenge his father for an injustice inflicted by a wealthy family." },
+                { id: 11, title: "The Boys", year: 2022, rating: "TV-MA", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A group of vigilantes set out to take down corrupt superheroes who abuse their superpowers." },
+                { id: 12, title: "Ozark", year: 2022, rating: "TV-MA", image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A financial adviser drags his family from Chicago to the Missouri Ozarks, where he must launder money to appease a drug boss." },
+                { id: 13, title: "Dark", year: 2020, rating: "TV-MA", image: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A family saga with a supernatural twist, set in a German town where the disappearance of two young children exposes the relationships among four families." }
+            ],
+            topPicks: [
+                { id: 14, title: "The Last of Us", year: 2023, rating: "TV-MA", image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "After a global pandemic destroys civilization, a hardened survivor takes charge of a 14-year-old girl who may be humanity's last hope." },
+                { id: 15, title: "Wednesday", year: 2022, rating: "TV-14", image: "https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Follows Wednesday Addams' years as a student, when she attempts to master her emerging psychic ability, thwart a killing spree, and solve the mystery that embroiled her parents." },
+                { id: 16, title: "House of the Dragon", year: 2022, rating: "TV-MA", image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "An internal succession war within House Targaryen at the height of its power, 172 years before the birth of Daenerys Targaryen." },
+                { id: 17, title: "Better Call Saul", year: 2022, rating: "TV-MA", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "The trials and tribulations of criminal lawyer Jimmy McGill in the years leading up to his fateful run-in with Walter White and Jesse Pinkman." },
+                { id: 18, title: "The Umbrella Academy", year: 2022, rating: "TV-14", image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A family of former child heroes, now grown apart, must reunite to continue to protect the world." }
+            ],
+            newReleases: [
+                { id: 19, title: "Avatar: The Way of Water", year: 2023, rating: "PG-13", image: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Jake Sully lives with his newfound family formed on the planet of Pandora. Once a familiar threat returns to finish what was previously started, Jake must work with Neytiri and the army of the Na'vi race to protect their planet." },
+                { id: 20, title: "John Wick: Chapter 4", year: 2023, rating: "R", image: "https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe." },
+                { id: 21, title: "Guardians of the Galaxy Vol. 3", year: 2023, rating: "PG-13", image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Still reeling from the loss of Gamora, Peter Quill must rally his team to defend the universe and protect one of their own." },
+                { id: 22, title: "The Super Mario Bros. Movie", year: 2023, rating: "PG", image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "The story of The Super Mario Bros. on their journey through the Mushroom Kingdom." },
+                { id: 23, title: "Ant-Man and the Wasp: Quantumania", year: 2023, rating: "PG-13", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Scott Lang and Hope Van Dyne are dragged into the Quantum Realm, along with Hope's parents and Scott's daughter Cassie." }
+            ],
+            watchAgain: [
+                { id: 24, title: "Game of Thrones", year: 2019, rating: "TV-MA", image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia." },
+                { id: 25, title: "Friends", year: 2004, rating: "TV-14", image: "https://images.unsplash.com/photo-1489599809505-f2d4c3f7b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Follows the personal and professional lives of six twenty to thirty-something-year-old friends living in Manhattan." },
+                { id: 26, title: "The Office", year: 2013, rating: "TV-14", image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A mockumentary on a group of typical office workers, where the workday consists of ego clashes, inappropriate behavior, and tedium." },
+                { id: 27, title: "Sherlock", year: 2017, rating: "TV-14", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "Modern update finds the famous sleuth and his doctor partner solving crime in 21st century London." },
+                { id: 28, title: "Inception", year: 2010, rating: "PG-13", image: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O." }
+            ]
+        };
+
+        // Sample watchlist data
+        const sampleWatchlist = [
+            {
+                id: 1,
+                title: "Inception",
+                year: 2010,
+                rating: "PG-13",
+                image: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O."
+            },
+            {
+                id: 2,
+                title: "The Dark Knight",
+                year: 2008,
+                rating: "PG-13",
+                image: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests."
+            },
+            {
+                id: 3,
+                title: "Interstellar",
+                year: 2014,
+                rating: "PG-13",
+                image: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                description: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival."
+            },
+            {
+                id: 4,
+                title: "Avengers: Endgame",
+                year: 2019,
+                rating: "PG-13",
+                image: "https://images.unsplash.com/photo-1635863138275-d9b33299680a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                description: "After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more."
+            }
+        ];
+
+        // App State
+        const state = {
+            currentView: 'home',
+            user: null,
+            watchlist: [],
+            favorites: [],
+            recentlyWatched: [],
+            searchResults: []
+        };
+
+        // DOM Elements
+        const views = document.querySelectorAll('.view');
+        const authModal = document.getElementById('login-modal');
+        const loginClose = document.getElementById('login-close');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const userMenuToggle = document.getElementById('user-menu-toggle');
+        const userDropdown = document.querySelector('.user-dropdown');
+        const logoutBtn = document.getElementById('logout-btn');
+        const profileSections = document.querySelectorAll('.profile-section');
+        const profileNavLinks = document.querySelectorAll('.profile-nav a');
+        const watchlistContainer = document.getElementById('watchlist-container');
+        const avatarInput = document.getElementById('avatar-input');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileSuccess = document.getElementById('profile-success');
+        const profileError = document.getElementById('profile-error');
+        const searchToggle = document.getElementById('search-toggle');
+        const searchBar = document.querySelector('.search-bar');
+        const searchInput = document.getElementById('search-input');
+        const notificationsToggle = document.getElementById('notifications-toggle');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        const videoPlayer = document.getElementById('video-player');
+        const videoElement = document.getElementById('video-element');
+        const videoClose = document.getElementById('video-close');
+        const heroPlayBtn = document.getElementById('hero-play-btn');
+        const heroInfoBtn = document.getElementById('hero-info-btn');
+        
+        // Content row elements
+        const trendingRow = document.getElementById('trending-row');
+        const popularRow = document.getElementById('popular-row');
+        const topPicksRow = document.getElementById('top-picks-row');
+        const newReleasesRow = document.getElementById('new-releases-row');
+        const watchAgainRow = document.getElementById('watch-again-row');
+        
+        // Scroll buttons
+        const scrollButtons = document.querySelectorAll('.scroll-button');
+        
+        // View All buttons
+        const viewAllButtons = document.querySelectorAll('.view-all');
+        
+        // Profile buttons
+        const changePaymentBtn = document.getElementById('change-payment-btn');
+        const editAddressBtn = document.getElementById('edit-address-btn');
+        const viewHistoryBtn = document.getElementById('view-history-btn');
+        const deviceSignOutBtns = document.querySelectorAll('[data-device]');
+        
+        // Settings buttons
+        const changeLanguageBtn = document.getElementById('change-language-btn');
+        const changeCountryBtn = document.getElementById('change-country-btn');
+        const changeCaptionsBtn = document.getElementById('change-captions-btn');
+        const manageActivityBtn = document.getElementById('manage-activity-btn');
+        const viewDownloadsBtn = document.getElementById('view-downloads-btn');
+        const enable2faBtn = document.getElementById('enable-2fa-btn');
+        const changeDataUsageBtn = document.getElementById('change-data-usage-btn');
+        
+        // Toggle switches
+        const emailNotifications = document.getElementById('email-notifications');
+        const pushNotifications = document.getElementById('push-notifications');
+        const smsNotifications = document.getElementById('sms-notifications');
+        const autoplayPreviews = document.getElementById('autoplay-previews');
+
+        // Initialize the app
+        function initApp() {
+            // Check if user is logged in
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                state.user = JSON.parse(savedUser);
+                updateUserUI();
+            } else {
+                // Show login modal if not authenticated
+                setTimeout(() => {
+                    authModal.classList.add('active');
+                }, 1000);
+            }
+            
+            // Load watchlist
+            const savedWatchlist = localStorage.getItem('watchlist');
+            if (savedWatchlist) {
+                state.watchlist = JSON.parse(savedWatchlist);
+            } else {
+                // Use sample data if no watchlist exists
+                state.watchlist = sampleWatchlist;
+                localStorage.setItem('watchlist', JSON.stringify(state.watchlist));
+            }
+            
+            // Load favorites
+            const savedFavorites = localStorage.getItem('favorites');
+            if (savedFavorites) {
+                state.favorites = JSON.parse(savedFavorites);
+            }
+            
+            // Load recently watched
+            const savedRecentlyWatched = localStorage.getItem('recentlyWatched');
+            if (savedRecentlyWatched) {
+                state.recentlyWatched = JSON.parse(savedRecentlyWatched);
+            }
+            
+            // Populate content rows
+            populateContentRows();
+            renderWatchlist();
+            updateStats();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Header scroll effect
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    document.querySelector('header').classList.add('scrolled');
+                } else {
+                    document.querySelector('header').classList.remove('scrolled');
+                }
+            });
+            
+            console.log('FilmFlix app initialized successfully!');
+        }
+
+        // Populate content rows with data
+        function populateContentRows() {
+            populateContentRow(trendingRow, contentData.trending);
+            populateContentRow(popularRow, contentData.popular);
+            populateContentRow(topPicksRow, contentData.topPicks);
+            populateContentRow(newReleasesRow, contentData.newReleases);
+            populateContentRow(watchAgainRow, contentData.watchAgain);
+        }
+        
+        // Populate a single content row
+        function populateContentRow(row, data) {
+            row.innerHTML = '';
+            
+            data.forEach(item => {
+                const isInWatchlist = state.watchlist.some(w => w.id === item.id);
+                const isFavorite = state.favorites.some(f => f.id === item.id);
+                
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}" class="card-image">
+                    <div class="card-overlay">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-info">
+                            <span>${item.year}</span>
+                            <span>${item.rating}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn play-btn" data-id="${item.id}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="card-action-btn ${isInWatchlist ? 'active' : ''}" data-id="${item.id}">
+                            <i class="fas ${isInWatchlist ? 'fa-check' : 'fa-plus'}"></i>
+                        </button>
+                        <button class="card-action-btn ${isFavorite ? 'active' : ''}" data-id="${item.id}">
+                            <i class="fas ${isFavorite ? 'fa-heart' : 'fa-heart'}"></i>
+                        </button>
+                    </div>
+                `;
+                
+                row.appendChild(card);
+            });
+            
+            // Add event listeners to action buttons
+            addContentCardEventListeners(row);
+        }
+        
+        // Add event listeners to content card buttons
+        function addContentCardEventListeners(container) {
+            // Play buttons
+            container.querySelectorAll('.play-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const item = getAllContent().find(i => i.id === id);
+                    playContent(item);
+                });
+            });
+            
+            // Add to watchlist buttons
+            container.querySelectorAll('.card-action-btn:not(.play-btn)').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const item = getAllContent().find(i => i.id === id);
+                    
+                    if (btn.querySelector('.fa-plus, .fa-check')) {
+                        // Add/remove from watchlist
+                        toggleWatchlist(item, btn);
+                    } else if (btn.querySelector('.fa-heart')) {
+                        // Add/remove from favorites
+                        toggleFavorite(item, btn);
+                    }
+                });
+            });
+            
+            // Card click for more info
+            container.querySelectorAll('.content-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = parseInt(card.querySelector('.card-action-btn').getAttribute('data-id'));
+                    const item = getAllContent().find(i => i.id === id);
+                    showContentInfo(item);
+                });
+            });
+        }
+        
+        // Get all content from all categories
+        function getAllContent() {
+            return [
+                ...contentData.trending,
+                ...contentData.popular,
+                ...contentData.topPicks,
+                ...contentData.newReleases,
+                ...contentData.watchAgain
+            ];
+        }
+        
+        // Toggle item in watchlist
+        function toggleWatchlist(item, button) {
+            const isInWatchlist = state.watchlist.some(w => w.id === item.id);
+            
+            if (isInWatchlist) {
+                // Remove from watchlist
+                state.watchlist = state.watchlist.filter(w => w.id !== item.id);
+                button.classList.remove('active');
+                button.innerHTML = '<i class="fas fa-plus"></i>';
+                showToast(`Removed "${item.title}" from your watchlist`);
+            } else {
+                // Add to watchlist
+                state.watchlist.push(item);
+                button.classList.add('active');
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                showToast(`Added "${item.title}" to your watchlist`);
+            }
+            
+            // Update localStorage
+            localStorage.setItem('watchlist', JSON.stringify(state.watchlist));
+            
+            // Update stats
+            updateStats();
+            
+            // Update watchlist view if active
+            if (state.currentView === 'watchlist') {
+                renderWatchlist();
+            }
+        }
+        
+        // Toggle item in favorites
+        function toggleFavorite(item, button) {
+            const isFavorite = state.favorites.some(f => f.id === item.id);
+            
+            if (isFavorite) {
+                // Remove from favorites
+                state.favorites = state.favorites.filter(f => f.id !== item.id);
+                button.classList.remove('active');
+                showToast(`Removed "${item.title}" from your favorites`);
+            } else {
+                // Add to favorites
+                state.favorites.push(item);
+                button.classList.add('active');
+                showToast(`Added "${item.title}" to your favorites`);
+            }
+            
+            // Update localStorage
+            localStorage.setItem('favorites', JSON.stringify(state.favorites));
+            
+            // Update stats
+            updateStats();
+        }
+        
+        // Play content
+        function playContent(item) {
+            // In a real app, this would play the actual video
+            // For demo, we'll show a video player with a placeholder
+            showToast(`Now playing: ${item.title}`);
+            
+            // Add to recently watched
+            if (!state.recentlyWatched.some(r => r.id === item.id)) {
+                state.recentlyWatched.unshift(item);
+                if (state.recentlyWatched.length > 10) {
+                    state.recentlyWatched.pop();
+                }
+                localStorage.setItem('recentlyWatched', JSON.stringify(state.recentlyWatched));
+            }
+            
+            // Update stats
+            updateStats();
+            
+            // Show video player (demo)
+            videoElement.src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+            videoPlayer.classList.add('active');
+        }
+        
+        // Show content information
+        function showContentInfo(item) {
+            // In a real app, this would show a detailed view
+            // For demo, we'll show a toast with the description
+            showToast(`${item.title}: ${item.description}`);
+        }
+        
+        // Set up scroll buttons functionality
+        function setupScrollButtons() {
+            scrollButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const container = this.parentElement;
+                    const row = container.querySelector('.content-row');
+                    const scrollAmount = 300; // Adjust this value to control scroll distance
+                    
+                    if (this.classList.contains('left')) {
+                        row.scrollLeft -= scrollAmount;
+                    } else {
+                        row.scrollLeft += scrollAmount;
+                    }
+                });
+            });
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Search toggle
+            searchToggle.addEventListener('click', () => {
+                searchBar.classList.toggle('active');
+                if (searchBar.classList.contains('active')) {
+                    searchInput.focus();
+                }
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                if (query.length > 2) {
+                    // In a real app, this would search through the content
+                    // For demo, we'll just show a toast
+                    showToast(`Searching for: ${query}`);
+                }
+            });
+            
+            // User menu toggle
+            userMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+            
+            // Notifications toggle
+            notificationsToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationsDropdown.classList.toggle('active');
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', () => {
+                userDropdown.classList.remove('active');
+                notificationsDropdown.classList.remove('active');
+            });
+            
+            // Logout button
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                logoutUser();
+            });
+            
+            // Profile navigation
+            profileNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = link.getAttribute('data-section');
+                    switchProfileSection(sectionId);
+                });
+            });
+            
+            // Profile form submission
+            document.getElementById('profile-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (saveProfileChanges()) {
+                    showMessage('Profile updated successfully!', 'success');
+                } else {
+                    showMessage('Error updating profile. Please try again.', 'error');
+                }
+            });
+            
+            // Password form submission
+            document.getElementById('password-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                changePassword();
+            });
+            
+            // Navigation
+            document.querySelectorAll('nav a, .user-dropdown a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (link.getAttribute('data-view')) {
+                        e.preventDefault();
+                        const viewName = link.getAttribute('data-view');
+                        
+                        // Check if user is authenticated for protected views
+                        if (['profile', 'settings', 'watchlist'].includes(viewName) && !state.user) {
+                            authModal.classList.add('active');
+                            return;
+                        }
+                        
+                        switchView(viewName);
+                        
+                        // Update navigation active state
+                        document.querySelectorAll('nav a').forEach(a => {
+                            a.classList.remove('active');
+                        });
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            // Avatar upload
+            avatarInput.addEventListener('change', handleAvatarUpload);
+            
+            // Video player close
+            videoClose.addEventListener('click', () => {
+                videoPlayer.classList.remove('active');
+                videoElement.pause();
+            });
+            
+            // Hero section buttons
+            heroPlayBtn.addEventListener('click', () => {
+                const heroContent = {
+                    id: 0,
+                    title: "Stranger Things",
+                    description: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl."
+                };
+                playContent(heroContent);
+            });
+            
+            heroInfoBtn.addEventListener('click', () => {
+                const heroContent = {
+                    id: 0,
+                    title: "Stranger Things",
+                    description: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl."
+                };
+                showContentInfo(heroContent);
+            });
+            
+            // View All buttons
+            viewAllButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = button.getAttribute('data-category');
+                    showToast(`Showing all ${category} content`);
+                    // In a real app, this would navigate to a full list view
+                });
+            });
+            
+            // Profile buttons
+            changePaymentBtn.addEventListener('click', () => {
+                showToast('Payment method change dialog would open here');
+            });
+            
+            editAddressBtn.addEventListener('click', () => {
+                showToast('Billing address editor would open here');
+            });
+            
+            viewHistoryBtn.addEventListener('click', () => {
+                showToast('Billing history would be displayed here');
+            });
+            
+            deviceSignOutBtns.forEach(button => {
+                button.addEventListener('click', () => {
+                    const device = button.getAttribute('data-device');
+                    showToast(`Signing out from ${device}`);
+                });
+            });
+            
+            // Settings buttons
+            changeLanguageBtn.addEventListener('click', () => {
+                showToast('Language selection dialog would open here');
+            });
+            
+            changeCountryBtn.addEventListener('click', () => {
+                showToast('Country/region selection dialog would open here');
+            });
+            
+            changeCaptionsBtn.addEventListener('click', () => {
+                showToast('Closed captions selection dialog would open here');
+            });
+            
+            manageActivityBtn.addEventListener('click', () => {
+                showToast('Viewing activity management would open here');
+            });
+            
+            viewDownloadsBtn.addEventListener('click', () => {
+                showToast('Download history would be displayed here');
+            });
+            
+            enable2faBtn.addEventListener('click', () => {
+                showToast('Two-factor authentication setup would begin here');
+            });
+            
+            changeDataUsageBtn.addEventListener('click', () => {
+                showToast('Data usage settings would open here');
+            });
+            
+            // Toggle switches
+            emailNotifications.addEventListener('change', (e) => {
+                showToast(`Email notifications ${e.target.checked ? 'enabled' : 'disabled'}`);
+            });
+            
+            pushNotifications.addEventListener('change', (e) => {
+                showToast(`Push notifications ${e.target.checked ? 'enabled' : 'disabled'}`);
+            });
+            
+            smsNotifications.addEventListener('change', (e) => {
+                showToast(`SMS notifications ${e.target.checked ? 'enabled' : 'disabled'}`);
+            });
+            
+            autoplayPreviews.addEventListener('change', (e) => {
+                showToast(`Autoplay previews ${e.target.checked ? 'enabled' : 'disabled'}`);
+            });
+            
+            // Auth modal tabs
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    switchAuthTab(tabName);
+                });
+            });
+
+            // Login form submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                if (email && password) {
+                    loginUser(email, password);
+                } else {
+                    showMessage('Please enter email and password.', 'error');
+                }
+            });
+
+            // Register form submission
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirm = document.getElementById('register-confirm').value;
+                
+                if (password !== confirm) {
+                    showMessage('Passwords do not match.', 'error');
+                    return;
+                }
+                
+                if (name && email && password) {
+                    registerUser(name, email, password);
+                } else {
+                    showMessage('Please fill all fields.', 'error');
+                }
+            });
+
+            // Social login buttons
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('click', handleSocialLogin);
+            });
+
+            // Modal close
+            loginClose.addEventListener('click', () => {
+                authModal.classList.remove('active');
+            });
+            
+            // Setup scroll buttons
+            setupScrollButtons();
+            
+            // Add touch/swipe support for mobile
+            setupTouchScrolling();
+        }
+
+        // Setup touch scrolling for mobile devices
+        function setupTouchScrolling() {
+            const rows = document.querySelectorAll('.content-row');
+            
+            rows.forEach(row => {
+                let startX;
+                let scrollLeft;
+                
+                row.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].pageX - row.offsetLeft;
+                    scrollLeft = row.scrollLeft;
+                });
+                
+                row.addEventListener('touchmove', (e) => {
+                    if (!startX) return;
+                    const x = e.touches[0].pageX - row.offsetLeft;
+                    const walk = (x - startX) * 2; // Scroll multiplier
+                    row.scrollLeft = scrollLeft - walk;
+                });
+            });
+        }
+
+        // Switch authentication tab
+        function switchAuthTab(tabName) {
+            authTabs.forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            if (tabName === 'login') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        // Switch profile section
+        function switchProfileSection(sectionId) {
+            profileNavLinks.forEach(link => {
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            profileSections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+        }
+
+        // Switch view
+        function switchView(viewName) {
+            views.forEach(view => {
+                if (view.id === `${viewName}-view`) {
+                    view.classList.add('active');
+                } else {
+                    view.classList.remove('active');
+                }
+            });
+
+            state.currentView = viewName;
+            
+            // Update specific views if needed
+            if (viewName === 'watchlist') {
+                updateStats();
+            }
+        }
+
+        // Login user
+        function loginUser(email, password) {
+            // Simulate API call
+            state.user = {
+                name: email.split('@')[0],
+                email: email,
+                joinDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+            };
+            
+            localStorage.setItem('user', JSON.stringify(state.user));
+            updateUserUI();
+            authModal.classList.remove('active');
+            showToast('Login successful!');
+        }
+
+        // Register user
+        function registerUser(name, email, password) {
+            // Simulate API call
+            state.user = {
+                name: name,
+                email: email,
+                joinDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+            };
+            
+            localStorage.setItem('user', JSON.stringify(state.user));
+            updateUserUI();
+            authModal.classList.remove('active');
+            showToast('Registration successful! You are now logged in.');
+        }
+
+        // Social login
+        function handleSocialLogin(e) {
+            const provider = e.target.closest('.social-btn').classList[1].split('-')[0];
+            showToast(`This would redirect to ${provider} authentication in a real application.`);
+        }
+
+        // Logout user
+        function logoutUser() {
+            state.user = null;
+            localStorage.removeItem('user');
+            updateUserUI();
+            userDropdown.classList.remove('active');
+            
+            if (['profile', 'settings', 'watchlist'].includes(state.currentView)) {
+                switchView('home');
+            }
+            
+            // Show login modal after logout
+            setTimeout(() => {
+                authModal.classList.add('active');
+            }, 500);
+            
+            showToast('You have been logged out.');
+        }
+
+        // Update UI based on authentication state
+        function updateUserUI() {
+            if (state.user) {
+                // Update profile page
+                document.getElementById('profile-name').textContent = state.user.name;
+                document.getElementById('profile-email').textContent = state.user.email;
+                document.getElementById('profile-join-date').textContent = state.user.joinDate;
+                document.getElementById('profile-email-input').value = state.user.email;
+                
+                // Show user dropdown options
+                document.querySelectorAll('.user-dropdown a').forEach(link => {
+                    link.style.display = 'block';
+                });
+            } else {
+                // Show login button
+                document.getElementById('login-btn').style.display = 'block';
+            }
+        }
+
+        // Handle avatar upload
+        function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    profileAvatar.src = event.target.result;
+                    // Save to localStorage
+                    if (state.user) {
+                        state.user.avatar = event.target.result;
+                        localStorage.setItem('user', JSON.stringify(state.user));
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Save profile changes
+        function saveProfileChanges() {
+            const firstName = document.getElementById('profile-first-name').value;
+            const lastName = document.getElementById('profile-last-name').value;
+            const email = document.getElementById('profile-email-input').value;
+            const phone = document.getElementById('profile-phone').value;
+            
+            // Validate inputs
+            if (!firstName || !lastName || !email) {
+                return false;
+            }
+            
+            // Update user state
+            state.user.name = `${firstName} ${lastName}`;
+            state.user.email = email;
+            state.user.phone = phone;
+            
+            // Update localStorage
+            localStorage.setItem('user', JSON.stringify(state.user));
+            
+            // Update UI
+            updateUserUI();
+            
+            return true;
+        }
+
+        // Change password
+        function changePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match.');
+                return;
+            }
+            
+            // Simulate password change
+            showToast('Password changed successfully!');
+            document.getElementById('password-form').reset();
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('movies-watched').textContent = Math.floor(Math.random() * 100) + 20;
+            document.getElementById('hours-watched').textContent = Math.floor(Math.random() * 300) + 50;
+            document.getElementById('watchlist-count').textContent = state.watchlist.length;
+            document.getElementById('favorites').textContent = state.favorites.length;
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            const messageElement = type === 'success' ? profileSuccess : profileError;
+            messageElement.textContent = message;
+            messageElement.style.display = 'block';
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // Render watchlist with enhanced empty state
+        function renderWatchlist() {
+            watchlistContainer.innerHTML = '';
+            
+            if (state.watchlist.length === 0) {
+                watchlistContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-film"></i>
+                        <h3>Your watchlist is empty</h3>
+                        <p>Start adding movies and series to your watchlist to keep track of what you want to watch.</p>
+                        <button class="profile-btn" id="add-sample-content">Add Sample Content</button>
+                    </div>
+                `;
+                
+                // Add event listener to the button
+                document.getElementById('add-sample-content').addEventListener('click', addSampleContent);
+                return;
+            }
+            
+            state.watchlist.forEach(item => {
+                const watchlistItem = document.createElement('div');
+                watchlistItem.className = 'watchlist-item';
+                watchlistItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}" class="watchlist-img">
+                    <div class="watchlist-overlay">
+                        <h3 class="watchlist-title">${item.title}</h3>
+                        <div class="watchlist-meta">
+                            <span>${item.year}</span>
+                            <span>${item.rating}</span>
+                        </div>
+                    </div>
+                    <button class="watchlist-remove" data-id="${item.id}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                watchlistContainer.appendChild(watchlistItem);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.watchlist-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    removeFromWatchlist(id);
+                });
+            });
+            
+            // Add event listeners to play buttons
+            document.querySelectorAll('.watchlist-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('.watchlist-remove')) {
+                        const id = parseInt(item.querySelector('.watchlist-remove').getAttribute('data-id'));
+                        const watchlistItem = state.watchlist.find(w => w.id === id);
+                        playContent(watchlistItem);
+                    }
+                });
+            });
+        }
+
+        // Add sample content to watchlist
+        function addSampleContent() {
+            state.watchlist = sampleWatchlist;
+            localStorage.setItem('watchlist', JSON.stringify(state.watchlist));
+            renderWatchlist();
+            updateStats();
+            showToast('Sample content added to your watchlist!');
+        }
+
+        // Remove from watchlist
+        function removeFromWatchlist(id) {
+            state.watchlist = state.watchlist.filter(item => item.id !== id);
+            localStorage.setItem('watchlist', JSON.stringify(state.watchlist));
+            renderWatchlist();
+            updateStats();
+            showToast('Item removed from watchlist');
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
